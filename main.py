@@ -5,6 +5,7 @@ import datetime
 
 from utils import org_scheduled_dates, to_local_datetime
 
+
 def todate(s):
     format = '%Y-%m-%d'
     return datetime.datetime.strptime(s, format)
@@ -34,6 +35,30 @@ def print_all(es):
         for k in keys:
             print(f'  {k}: {getattr(e, k)}')
 
+def writeorgfile(events,
+                 orgfile,
+                 title,
+                 category,
+                 filetags):
+
+    headings = f"""#+TITLE:       {title}
+#+UPDATED:     {datetime.datetime.now()}
+#+CATEGORY:    {category}
+#+FILETAGS:    {filetags}
+
+"""
+
+    def __entry(event):
+        return f"""* {e.summary}
+{e.orgschedule}
+
+"""
+
+    with open(orgfile, 'w') as f:
+        f.write(headings)
+        for e in events:
+            f.write(__entry(e))
+
 
 def main():
     config = configparser.ConfigParser()
@@ -44,8 +69,19 @@ def main():
     maxdays = int(config['MAXFUTUREDAYS'])
     enddate = datetime.date.today() + datetime.timedelta(days=maxdays)
 
-    es = fetch_events(url, startdate, enddate)
-    print_all(es)
+    title = config['TITLE']
+    category = config['CATEGORY']
+    filetags = config['FILETAGS']
+    orgfile = config['ORGFILE']
+
+    events = fetch_events(url, startdate, enddate)
+    # print_all(events)
+
+    writeorgfile(events,
+                 orgfile = orgfile,
+                 title = title,
+                 category = category,
+                 filetags = filetags)
 
 
 if __name__ == '__main__':
