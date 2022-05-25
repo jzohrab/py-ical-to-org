@@ -23,6 +23,7 @@ def org_scheduled_dates(start_utc, end_utc, all_day = False):
         dayname = local_dt.strftime("%A")[0:3]
         return {
             'utcdatepart': f"{dt}".split(' ')[0],
+            'utcdayname': dt.strftime("%A")[0:3],
             'local_date': local_dt,
             'datepart': dd,
             'timepart': ':'.join([hh, mm]),
@@ -58,7 +59,7 @@ def org_scheduled_dates(start_utc, end_utc, all_day = False):
         e = _parts(actual_end)
 
         def _utc_to_org(p):
-            return f"<{p['utcdatepart']} {p['dayname']}>"
+            return f"<{p['utcdatepart']} {p['utcdayname']}>"
 
         if s['utcdatepart'] == e['utcdatepart']:
             return _utc_to_org(s)
