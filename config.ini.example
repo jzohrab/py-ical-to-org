@@ -1,0 +1,29 @@
+[CONFIG]
+
+# Your "secret iCal address" from google calendar.
+# See, e.g., this blog post:
+# https://simplify-everything.com/en/blog/2019/09/30/ ...
+#    how-to-get-your-secret-address-in-ical-format-on-google-calendar/
+# IMPORTANT: replace any "%" with "%%" !!!!!
+url = https://calendar.google.com/calendar/ical/<YOUR_GMAIL_NAME_HERE>%%40gmail.com/private-0123456789abcdef0123456789abcdef/basic.ics
+
+# Earliest date of events to be included.
+start_date = 2022-05-01
+
+# Only get up to max_future_days days in the future.  Some calendars
+# may have repeating events with no end date, so use this to keep your
+# file size sensible.
+max_future_days = 10
+
+# Once a scheduled item has been completed, should it be auto-marked
+# as DONE?
+mark_past_as_done = True
+
+# Org file to write.
+# Note the full file is completely overwritten on each run of main.
+org_file = /path/to/your/schedule.org
+
+# Heading values for the org file.
+title = Google calender sync.
+category = gcal
+filetags = gcal
