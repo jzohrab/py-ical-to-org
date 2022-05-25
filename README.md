@@ -62,6 +62,24 @@ python main.py
 deactivate
 ```
 
+or ...
+
+```
+./update-schedule.sh
+```
+
+## Cron job
+
+# Cron job
+
+For example, sync things every hour.
+
+```
+* */1 * * * pushd /path/to/this/dir && ./update-schedule.sh && popd >> /tmp/cron.out 2>&1
+```
+
+
+
 # Dev notes
 
 There are just a few tests:
