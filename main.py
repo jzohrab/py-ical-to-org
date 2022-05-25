@@ -35,27 +35,18 @@ def print_all(es):
         for k in keys:
             print(f'  {k}: {getattr(e, k)}')
 
-def writeorgfile(events,
-                 orgfile,
-                 title,
-                 category,
-                 filetags):
-
-    headings = f"""#+TITLE:       {title}
-#+UPDATED:     {datetime.datetime.now()}
-#+CATEGORY:    {category}
-#+FILETAGS:    {filetags}
-
-"""
+def writeorgfile(orgfile,
+                 headers,
+                 events):
 
     def __entry(event):
         return f"""* {e.summary}
-{e.orgschedule}
+SCHEDULED: {e.orgschedule}
 
 """
 
     with open(orgfile, 'w') as f:
-        f.write(headings)
+        f.write(headers)
         for e in events:
             f.write(__entry(e))
 
@@ -68,20 +59,29 @@ def main():
     startdate = todate(config['STARTDATE'])
     maxdays = int(config['MAXFUTUREDAYS'])
     enddate = datetime.date.today() + datetime.timedelta(days=maxdays)
-
     title = config['TITLE']
     category = config['CATEGORY']
     filetags = config['FILETAGS']
     orgfile = config['ORGFILE']
+    markpastasDONE = config['MARKPASTASDONE']
 
     events = fetch_events(url, startdate, enddate)
     # print_all(events)
 
-    writeorgfile(events,
-                 orgfile = orgfile,
-                 title = title,
-                 category = category,
-                 filetags = filetags)
+    if markpastasDONE:
+        now = datetime.datetime.now()
+        done = [e for e in events if e.localend < now]
+        for e in done:
+            e.summary = f"DONE {e.summary}"
+
+    headers = f"""#+TITLE:       {title}
+#+UPDATED:     {datetime.datetime.now()}
+#+CATEGORY:    {category}
+#+FILETAGS:    {filetags}
+"""
+    writeorgfile(orgfile = orgfile,
+                 headers = headers,
+                 events = events)
 
 
 if __name__ == '__main__':
