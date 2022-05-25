@@ -3,21 +3,11 @@ import configparser
 import calendar
 import datetime
 
+from utils import org_scheduled_dates, to_local_datetime
 
 def todate(s):
     format = '%Y-%m-%d'
     return datetime.datetime.strptime(s, format)
-
-# Ref https://stackoverflow.com/questions/4770297/
-#   convert-utc-datetime-string-to-local-datetime
-def to_local_datetime(utc_dt):
-    """
-    convert from utc datetime to a locally aware datetime according to the host timezone
-
-    :param utc_dt: utc datetime
-    :return: local timezone datetime
-    """
-    return datetime.datetime.fromtimestamp(calendar.timegm(utc_dt.timetuple()))
 
 
 def fetch_events(url, startdate, enddate):
@@ -25,6 +15,7 @@ def fetch_events(url, startdate, enddate):
     for e in es:
         e.localstart = to_local_datetime(e.start)
         e.localend = to_local_datetime(e.end)
+        e.orgschedule = org_scheduled_dates(e.start, e.end, e.all_day)
     es.sort(key=lambda x: x.localstart)
     return es
 
@@ -37,7 +28,8 @@ def print_all(es):
         keys = [
             'uid',
             'start', 'end', 'all_day',
-            'localstart', 'localend'
+            'localstart', 'localend',
+            'orgschedule'
         ]
         for k in keys:
             print(f'  {k}: {getattr(e, k)}')

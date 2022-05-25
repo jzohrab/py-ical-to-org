@@ -29,7 +29,7 @@ class TestUtils_make_org_scheduled_dates(unittest.TestCase):
         start = parse('2022-05-25 00:00:00')
         end = parse('2022-05-26 00:00:00')
         actual = org_scheduled_dates(start, end, True)
-        expected = '<2022-05-25 Tue>'
+        expected = '<2022-05-25 Wed>'
         self.assertEqual(actual, expected)
 
     def test_full_day_multiple_days(self):
@@ -37,5 +37,5 @@ class TestUtils_make_org_scheduled_dates(unittest.TestCase):
         start = parse('2022-05-25 00:00:00')
         end = parse('2022-05-27 00:00:00')
         actual = org_scheduled_dates(start, end, True)
-        expected = '<2022-05-25 Tue>-<2022-05-26 Wed>'
+        expected = '<2022-05-25 Wed>-<2022-05-26 Thu>'
         self.assertEqual(actual, expected)
