@@ -36,8 +36,8 @@ def print_all(es):
         # print(e)  !! don't do this, throws error
         keys = [
             'uid',
-            'localstart',
-            'localend'
+            'start', 'end', 'all_day',
+            'localstart', 'localend'
         ]
         for k in keys:
             print(f'  {k}: {getattr(e, k)}')
