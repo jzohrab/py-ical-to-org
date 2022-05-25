@@ -6,12 +6,8 @@ import datetime
 from utils import org_scheduled_dates, to_local_datetime
 
 
-def todate(s):
-    format = '%Y-%m-%d'
-    return datetime.datetime.strptime(s, format)
-
-
 def fetch_events(url, startdate, enddate):
+    """Fetch events and add data to assist."""
     es  = events(url = url, start = startdate, end = enddate)
     for e in es:
         e.localstart = to_local_datetime(e.start)
@@ -22,6 +18,7 @@ def fetch_events(url, startdate, enddate):
 
 
 def print_all(es):
+    """Debugging method only."""
     for e in es:
         print('---')
         print(e.summary)
@@ -51,34 +48,39 @@ SCHEDULED: {e.orgschedule}
             f.write(__entry(e))
 
 
+def orgfile_header(config):
+    """String to write at top of file."""
+    return f"""#+TITLE:       {config['title']}
+#+UPDATED:     {datetime.datetime.now()}
+#+CATEGORY:    {config['category']}
+#+FILETAGS:    {config['filetags']}
+"""
+
+
 def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
     config = config['CONFIG']
-    url = config['URL']
-    startdate = todate(config['STARTDATE'])
-    maxdays = int(config['MAXFUTUREDAYS'])
+
+    # Ensure have all config values before fetching/writing.
+    url = config['url']
+    startdate = config['start_date']
+    startdate = datetime.datetime.strptime(startdate, '%Y-%m-%d')
+    maxdays = int(config['max_future_days'])
     enddate = datetime.date.today() + datetime.timedelta(days=maxdays)
-    title = config['TITLE']
-    category = config['CATEGORY']
-    filetags = config['FILETAGS']
-    orgfile = config['ORGFILE']
-    markpastasDONE = config['MARKPASTASDONE']
+    headers = orgfile_header(config)
+    orgfile = config['org_file']
 
     events = fetch_events(url, startdate, enddate)
     # print_all(events)
 
+    markpastasDONE = config.get('mark_past_as_done', False)
     if markpastasDONE:
         now = datetime.datetime.now()
         done = [e for e in events if e.localend < now]
         for e in done:
             e.summary = f"DONE {e.summary}"
 
-    headers = f"""#+TITLE:       {title}
-#+UPDATED:     {datetime.datetime.now()}
-#+CATEGORY:    {category}
-#+FILETAGS:    {filetags}
-"""
     writeorgfile(orgfile = orgfile,
                  headers = headers,
                  events = events)
